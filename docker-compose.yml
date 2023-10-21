@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  semanticapp:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=pgvector
+      - DB_PORT=5432
+    depends_on:
+      - pgvector
+      - duckling
+
+  pgvector:
+    image: ankane/pgvector
+    environment:
+      - POSTGRES_USER=deeptech
+      - POSTGRES_PASSWORD=deeptech
+      - POSTGRES_DB=semanticdb
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  duckling:
+    image: registry.gitlab.com/jaco-assistant/jaco-master/duckling_arm64:master
+    ports:
+      - "8008:8008"
