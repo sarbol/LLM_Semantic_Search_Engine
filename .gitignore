@@ -4,3 +4,5 @@ __pycache__/
 data/
 azure-pipeline.yml
 /manifests
+sarbol_ec2.pem
+cmsProject_to_aws.zip

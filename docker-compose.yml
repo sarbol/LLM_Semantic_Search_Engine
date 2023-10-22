@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "8000:8000"
+      - "5000:5000"
     environment:
       - DB_HOST=pgvector
       - DB_PORT=5432
@@ -27,6 +27,6 @@ services:
       - "5432:5432"
 
   duckling:
-    image: registry.gitlab.com/jaco-assistant/jaco-master/duckling_arm64:master
+    image: rasa/duckling
     ports:
-      - "8008:8008"
+      - "8000:8000"

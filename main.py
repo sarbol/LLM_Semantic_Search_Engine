@@ -99,8 +99,23 @@ async def file_status(file_id):
     cursor = conn.cursor()
     cursor.execute(""" SELECT * FROM doc_status WHERE doc_id = %s """, (file_id,))
     d = cursor.fetchone()
-    d = {k:v for k, v in d.items()}
-    return d
+    if d:
+        d = {k:v for k, v in d.items()}
+        return d
+    else:
+        return {}
+    
+@app.get("/deeptech/api/list")
+async def list_contracts():
+    cursor = conn.cursor()
+    cursor.execute(
+    """
+        SELECT doc_id FROM document LIMIT 5;
+    """
+    )
+    d = cursor.fetchall()
+    ids = [d[i].get("doc_id") for i in range(len(d))]
+    return ids
 
 
 @app.get("/deeptech/api/single/{file_id}")
@@ -108,7 +123,6 @@ async def single(file_id):
     cursor = conn.cursor()
     cursor.execute(""" SELECT doc_id, metadata FROM document WHERE doc_id = %s """, (file_id,))
     d = cursor.fetchone()
-    print(d)
     if d:
         d = {k:v for k, v in d.items()}
         return d
@@ -121,11 +135,9 @@ async def search(query: schemas.searchQuery):
     text = query.get("query")
     response = keyword_semantic_search(text, conn)
     ids = [response[i].get("doc_id") for i in range(len(response))]
-    result = [{**response[i]} for i in range(len(response))]
-    print(result)
     return ids
 
 
 if __name__ == "__main__":
     postgres_table_schema(conn)
-    uvicorn.run("main:app", host = "0.0.0.0", port = 8000, log_level = "info", reload = True)
+    uvicorn.run("main:app", host = "0.0.0.0", port = 5000, log_level = "info", reload = True)
