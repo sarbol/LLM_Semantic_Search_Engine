@@ -361,20 +361,19 @@ def keyword_semantic_search(query: str, db_connection: psycopg2.extensions.conne
     query_emb = embeddings(query)
     query_emb = json.dumps(query_emb)
     keyword_semantic_sql = """
-                                WITH data as (
+                                WITH filter as (
                                                 SELECT
-                                                    id, doc_id, summary, summary_vector,
-                                                    ts_rank_cd(keyword_vector, plainto_tsquery('english', %s)) AS rank
+                                                    id, doc_id, metadata,
+                                                    ts_rank(keyword_vector, plainto_tsquery('english', %s))::NUMERIC(4,3) AS rank,
+                                                    1 - (summary_vector <=> %s)::NUMERIC(4,3) as distance
                                                 FROM document
-                                                ORDER BY rank
-                                                DESC LIMIT 5
                                             )
                                 SELECT 
-                                    id, doc_id, summary, rank,
-                                    1 - (summary_vector <=> %s) AS distance
-                                FROM data
+                                    id, doc_id, metadata
+                                FROM filter
+                                WHERE rank > 0.20 AND distance > 0.760
                                 ORDER BY distance
-                                DESC LIMIT 1;
+                                DESC LIMIT 3;
                             """
                             
     params = (query, query_emb)
