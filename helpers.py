@@ -371,7 +371,7 @@ def keyword_semantic_search(query: str, db_connection: psycopg2.extensions.conne
                                 SELECT 
                                     id, doc_id, metadata
                                 FROM filter
-                                WHERE rank > 0.20 AND distance > 0.760
+                                WHERE rank > 0.20 OR distance > 0.760
                                 ORDER BY distance
                                 DESC LIMIT 3;
                             """
