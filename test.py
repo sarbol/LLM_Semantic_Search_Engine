@@ -21,7 +21,6 @@ if __name__ == "__main__":
     print(f"Doc Summary: {summary}")
     print("\n\n")
     result = llm_based_extraction_result(summary)
-    print(result)
     
     
     # date_ = "Null"
